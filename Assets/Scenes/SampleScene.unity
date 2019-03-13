@@ -204,6 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1344974263}
   - component: {fileID: 1344974262}
+  - component: {fileID: 1344974261}
   m_Layer: 0
   m_Name: Red Square
   m_TagString: Untagged
@@ -211,6 +212,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1344974261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344974260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e28d1a1dfaf3a1c469322051eda488b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy:
+    name: 
+    baseHP: 0
+    currentHP: 0
+    baseMP: 0
+    currentMP: 0
+    baseStrength: 0
+    currentStrength: 0
+    baseDefense: 0
+    currentDefense: 0
+    baseSpeed: 0
+    currentSpeed: 0
+    baseMagic: 0
+    currentMagic: 0
+    baseEvasion: 0
+    currentEvasion: 0
+    enemyType: 0
 --- !u!212 &1344974262
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -389,10 +419,15 @@ MonoBehaviour:
     baseMP: 0
     currentMP: 0
     baseStrength: 0
+    currentStrength: 0
     baseDefense: 0
+    currentDefense: 0
     baseSpeed: 0
+    currentSpeed: 0
     baseMagic: 0
+    currentMagic: 0
     baseEvasion: 0
+    currentEvasion: 0
 --- !u!212 &2020747726
 SpriteRenderer:
   m_ObjectHideFlags: 0
