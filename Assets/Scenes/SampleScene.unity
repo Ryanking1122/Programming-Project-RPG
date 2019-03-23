@@ -891,6 +891,53 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1042997358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1042997360}
+  - component: {fileID: 1042997359}
+  m_Layer: 0
+  m_Name: BattleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1042997359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042997358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 724f177d25ae9b041860194fc2f6162b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleState: 0
+  PerformList: []
+  PlayersInBattle: []
+  EnemiesInBattle: []
+--- !u!4 &1042997360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042997358}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 722.6325, y: 113.90758, z: -2.53125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1045681895 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2971736455515453454, guid: fe266603c506bcf4eb1ca43c85ffae1c,
@@ -1475,8 +1522,8 @@ GameObject:
   - component: {fileID: 1344974262}
   - component: {fileID: 1344974261}
   m_Layer: 0
-  m_Name: Red Square
-  m_TagString: Untagged
+  m_Name: Enemy
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1494,7 +1541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy:
-    name: 
+    name: Enemy
     baseHP: 0
     currentHP: 0
     baseMP: 0
@@ -1511,6 +1558,7 @@ MonoBehaviour:
     currentEvasion: 0
     enemyType: 0
   currentState: 0
+  TargetToAttack: {fileID: 0}
 --- !u!212 &1344974262
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1786,7 +1834,7 @@ GameObject:
   - component: {fileID: 2020747725}
   m_Layer: 0
   m_Name: Blue Square
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2117,6 +2165,13 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0.49999237
+      objectReference: {fileID: 0}
+    - target: {fileID: 5749846187803137920, guid: fe266603c506bcf4eb1ca43c85ffae1c,
+        type: 3}
+      propertyPath: m_Text
+      value: 'MP: 9999/9999
+
+'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe266603c506bcf4eb1ca43c85ffae1c, type: 3}
