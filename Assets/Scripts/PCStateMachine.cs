@@ -4,9 +4,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MCStateMachine : MonoBehaviour
+public class PCStateMachine : MonoBehaviour
 {
-    public MainCharacter mainCharacter;
+    public PlayerCharacter playerCharacter;
+    private BattleStateMachine BSM;
 
     public enum TurnState
     {
@@ -26,6 +27,7 @@ public class MCStateMachine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        BSM = GameObject.Find("BattleManager").GetComponent<BattleStateMachine>();
         currentState = TurnState.PROCESSING;
     }
 
@@ -39,15 +41,17 @@ public class MCStateMachine : MonoBehaviour
                 break;
 
             case (TurnState.ADDTOLIST):
+                BSM.HeroManageList.Add(this.gameObject);
+                currentState = TurnState.WAITING;
                 break;
 
             case (TurnState.DEAD):
                 break;
 
-            case (TurnState.SELECTING):
+            case (TurnState.WAITING):
                 break;
 
-            case (TurnState.WAITING):
+            case (TurnState.ACTION):
                 break;
 
             default:
