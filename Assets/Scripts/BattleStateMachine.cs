@@ -81,7 +81,7 @@ public class BattleStateMachine : MonoBehaviour
             case (PlayerGUI.ACTIVATE):
                 if(HeroManageList.Count > 0)
                 {
-                    HeroManageList[0].transform.FindChild("TurnPointer").gameObject.SetActive(true);
+                    HeroManageList[0].transform.Find("TurnPointer").gameObject.SetActive(true);
                     HeroChoice = new TurnHandler();
                     attackPanel.SetActive(true);
                     PlayerInput = PlayerGUI.WAITING;
@@ -136,7 +136,7 @@ public class BattleStateMachine : MonoBehaviour
     {
         PerformList.Add(HeroChoice);
         enemySelectPanel.SetActive(false);
-        HeroManageList[0].transform.FindChild("TurnPointer").gameObject.SetActive(false);
+        HeroManageList[0].transform.Find("TurnPointer").gameObject.SetActive(false);
         HeroManageList.RemoveAt(0);
         PlayerInput = PlayerGUI.ACTIVATE;
     }
