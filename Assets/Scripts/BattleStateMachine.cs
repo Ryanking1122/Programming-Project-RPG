@@ -69,6 +69,9 @@ public class BattleStateMachine : MonoBehaviour
                 if(PerformList[0].Type == "Player")
                 {
                     Debug.Log("Hero ready to perform");
+                    PCStateMachine PSM = performer.GetComponent<PCStateMachine>();
+                    PSM.TargetToAttack = PerformList[0].AttackersTarget;
+                    PSM.currentState = PCStateMachine.TurnState.ACTION;
                 }
                 battleState = PerformAction.PERFORMACTION;
                 break;

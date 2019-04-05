@@ -23,7 +23,7 @@ public class EnemyStateMachine : MonoBehaviour
     //TimeForBattle stuff
     private bool actionStarted = false;
     public GameObject TargetToAttack;
-    private float animSpeed = 5f;
+    private float animSpeed = 10f;
 
     // Start is called before the first frame update
     void Start()
