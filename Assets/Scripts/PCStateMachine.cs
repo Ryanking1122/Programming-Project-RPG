@@ -23,10 +23,13 @@ public class PCStateMachine : MonoBehaviour
     private float curCooldown = 0f;
     private float maxCooldown = 5f;
     public Image progressBar;
+    public GameObject turnPointer;
 
     // Start is called before the first frame update
     void Start()
     {
+        curCooldown = UnityEngine.Random.Range(0, 2.5f);
+        turnPointer.SetActive(false);
         BSM = GameObject.Find("BattleManager").GetComponent<BattleStateMachine>();
         currentState = TurnState.PROCESSING;
     }
