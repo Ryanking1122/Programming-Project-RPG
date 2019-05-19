@@ -6,6 +6,8 @@ public class Character
 {
     public string name; //Character Name
 
+    public int charLevel; //Character Level
+
     public float baseHP; //Character's Base Health Point Stat
     public float currentHP; //Character's Current Health Point Stat
 

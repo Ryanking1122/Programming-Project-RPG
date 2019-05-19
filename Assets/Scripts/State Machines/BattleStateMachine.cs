@@ -13,9 +13,9 @@ public class BattleStateMachine : MonoBehaviour
     }
     public PerformAction battleState;
 
-    public List<TurnHandler> PerformList = new List<TurnHandler>();
-    public List<GameObject> PlayersInBattle = new List<GameObject>();
-    public List<GameObject> EnemiesInBattle = new List<GameObject>();
+    public List<TurnHandler> performList = new List<TurnHandler>();
+    public List<GameObject> playersInBattle = new List<GameObject>();
+    public List<GameObject> enemiesInBattle = new List<GameObject>();
 
     public enum PlayerGUI
     {
@@ -25,10 +25,10 @@ public class BattleStateMachine : MonoBehaviour
         INPUT2,
         DONE
     }
-    public PlayerGUI PlayerInput;
+    public PlayerGUI playerInput;
 
-    public List<GameObject> HeroManageList = new List<GameObject>();
-    private TurnHandler HeroChoice;
+    public List<GameObject> heroManageList = new List<GameObject>();
+    private TurnHandler heroChoice;
     public GameObject enemyButton;
     public Transform spacer;
 
@@ -39,9 +39,9 @@ public class BattleStateMachine : MonoBehaviour
     void Start()
     {
         battleState = PerformAction.WAIT;
-        EnemiesInBattle.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
-        PlayersInBattle.AddRange(GameObject.FindGameObjectsWithTag("Player"));
-        PlayerInput = PlayerGUI.ACTIVATE;
+        enemiesInBattle.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+        playersInBattle.AddRange(GameObject.FindGameObjectsWithTag("Player"));
+        playerInput = PlayerGUI.ACTIVATE;
         attackPanel.SetActive(false);
         enemySelectPanel.SetActive(false);
         EnemyButtons();
@@ -53,22 +53,25 @@ public class BattleStateMachine : MonoBehaviour
         switch (battleState)
         {
             case (PerformAction.WAIT):
-                if(PerformList.Count > 0)
+                if(performList.Count > 0)
                 {
                     battleState = PerformAction.TAKEACTION;
                 }
                 break;
             case (PerformAction.TAKEACTION):
-                GameObject performer = GameObject.Find(PerformList[0].Attacker);
-                if(PerformList[0].Type == "Enemy")
+                GameObject performer = GameObject.Find(performList[0].attacker);
+                if(performList[0].type == "Enemy")
                 {
                     EnemyStateMachine ESM = performer.GetComponent<EnemyStateMachine>();
-                    ESM.TargetToAttack = PerformList[0].AttackersTarget;
+                    ESM.targetToAttack = performList[0].attackersTarget;
                     ESM.currentState = EnemyStateMachine.TurnState.ACTION;
                 }
-                if(PerformList[0].Type == "Player")
+                if(performList[0].type == "Player")
                 {
                     Debug.Log("Hero ready to perform");
+                    PCStateMachine PSM = performer.GetComponent<PCStateMachine>();
+                    PSM.targetToAttack = performList[0].attackersTarget;
+                    PSM.currentState = PCStateMachine.TurnState.ACTION;
                 }
                 battleState = PerformAction.PERFORMACTION;
                 break;
@@ -76,15 +79,15 @@ public class BattleStateMachine : MonoBehaviour
                 break;
         }
 
-        switch (PlayerInput)
+        switch (playerInput)
         {
             case (PlayerGUI.ACTIVATE):
-                if(HeroManageList.Count > 0)
+                if(heroManageList.Count > 0)
                 {
-                    HeroManageList[0].transform.FindChild("TurnPointer").gameObject.SetActive(true);
-                    HeroChoice = new TurnHandler();
+                    heroManageList[0].transform.Find("TurnPointer").gameObject.SetActive(true);
+                    heroChoice = new TurnHandler();
                     attackPanel.SetActive(true);
-                    PlayerInput = PlayerGUI.WAITING;
+                    playerInput = PlayerGUI.WAITING;
                 }
                 break;
 
@@ -99,28 +102,28 @@ public class BattleStateMachine : MonoBehaviour
 
     public void CollectActions(TurnHandler turnInfo)
     {
-        PerformList.Add(turnInfo);
+        performList.Add(turnInfo);
     }
 
     void EnemyButtons()
     {
-        foreach(GameObject enemy in EnemiesInBattle)
+        foreach(GameObject enemy in enemiesInBattle)
         {
             GameObject newButton = Instantiate(enemyButton) as GameObject;
             EnemySelectButton button = newButton.GetComponent<EnemySelectButton>();
             EnemyStateMachine cur_enemy = enemy.GetComponent<EnemyStateMachine>();
             Text buttonText = newButton.transform.Find("Text").gameObject.GetComponent<Text>();
             buttonText.text = " " + cur_enemy.enemy.name;
-            button.EnemyPrefab = enemy;
+            button.enemyPrefab = enemy;
             newButton.transform.SetParent(spacer);
         }
     }
 
     public void Input1()
     {
-        HeroChoice.Attacker = HeroManageList[0].name;
-        HeroChoice.AttackerGameObject = HeroManageList[0];
-        HeroChoice.Type = "Player";
+        heroChoice.attacker = heroManageList[0].name;
+        heroChoice.attackerGameObject = heroManageList[0];
+        heroChoice.type = "Player";
 
         attackPanel.SetActive(false);
         enemySelectPanel.SetActive(true);
@@ -128,16 +131,16 @@ public class BattleStateMachine : MonoBehaviour
 
     public void EnemySelection(GameObject chosenEnemy)
     {
-        HeroChoice.AttackersTarget = chosenEnemy;
-        PlayerInput = PlayerGUI.DONE;
+        heroChoice.attackersTarget = chosenEnemy;
+        playerInput = PlayerGUI.DONE;
     }
 
     public void PlayerInputComplete()
     {
-        PerformList.Add(HeroChoice);
+        performList.Add(heroChoice);
         enemySelectPanel.SetActive(false);
-        HeroManageList[0].transform.FindChild("TurnPointer").gameObject.SetActive(false);
-        HeroManageList.RemoveAt(0);
-        PlayerInput = PlayerGUI.ACTIVATE;
+        heroManageList[0].transform.Find("TurnPointer").gameObject.SetActive(false);
+        heroManageList.RemoveAt(0);
+        playerInput = PlayerGUI.ACTIVATE;
     }
 }

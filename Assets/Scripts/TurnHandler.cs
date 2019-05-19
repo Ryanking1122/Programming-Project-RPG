@@ -5,8 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class TurnHandler
 {
-    public string Attacker; //Name of Attacker
-    public string Type;
-    public GameObject AttackerGameObject; //GameObject of the Attacker
-    public GameObject AttackersTarget; //GameObject for the Target of the Attacker.
+    public string attacker; //Name of Attacker
+    public string type;
+    public GameObject attackerGameObject; //GameObject of the Attacker
+    public GameObject attackersTarget; //GameObject for the Target of the Attacker.
 }
