@@ -5,5 +5,5 @@ using UnityEngine;
 
 public class PlayerCharacter : Character
 {
-    
+    public int abilityPoints; //Points used to buy Abilities in the Ability Shop 
 }

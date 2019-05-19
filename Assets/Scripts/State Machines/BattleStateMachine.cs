@@ -105,7 +105,7 @@ public class BattleStateMachine : MonoBehaviour
         performList.Add(turnInfo);
     }
 
-    void EnemyButtons()
+    void EnemyButtons() //Populates the Buttons for the Enemies to select
     {
         foreach(GameObject enemy in enemiesInBattle)
         {
@@ -119,7 +119,7 @@ public class BattleStateMachine : MonoBehaviour
         }
     }
 
-    public void Input1()
+    public void Input1() //Attack
     {
         heroChoice.attacker = heroManageList[0].name;
         heroChoice.attackerGameObject = heroManageList[0];

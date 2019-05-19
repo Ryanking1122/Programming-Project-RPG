@@ -6,7 +6,7 @@ using UnityEngine;
 public class TurnHandler
 {
     public string attacker; //Name of Attacker
-    public string type;
+    public string type; //Type of Attacker
     public GameObject attackerGameObject; //GameObject of the Attacker
     public GameObject attackersTarget; //GameObject for the Target of the Attacker.
 }
