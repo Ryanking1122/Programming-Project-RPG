@@ -34,4 +34,6 @@ public class Character
         GRASS,
         STEEL
     }
+
+    public List<Attack> attackList = new List<Attack>(); //List of Attacks that can be used by the character
 }

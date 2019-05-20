@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Attack
+public class Attack : MonoBehaviour
 {
     public string attackName; //Name of the Attack.
     public string attackDescription; //Description of the Attack.
