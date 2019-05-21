@@ -1756,6 +1756,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3225355490859934964, guid: 6d1b544e8cc856043bf7dec9b2dc054f,
+        type: 3}
+      propertyPath: enemy.attackList.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3225355490859934964, guid: 6d1b544e8cc856043bf7dec9b2dc054f,
+        type: 3}
+      propertyPath: enemy.attackList.Array.data[0]
+      value: 
+      objectReference: {fileID: 6687823083169208434, guid: 1bd63b6de56c75e488b484ad89b87790,
+        type: 3}
+    - target: {fileID: 3225355490859934964, guid: 6d1b544e8cc856043bf7dec9b2dc054f,
+        type: 3}
+      propertyPath: enemy.attackList.Array.data[1]
+      value: 
+      objectReference: {fileID: 2428132949040530755, guid: 26742fe0ef259b443940fc2fb8d82831,
+        type: 3}
+    - target: {fileID: 3225355490859934964, guid: 6d1b544e8cc856043bf7dec9b2dc054f,
+        type: 3}
+      propertyPath: enemy.charLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3225355490859934964, guid: 6d1b544e8cc856043bf7dec9b2dc054f,
+        type: 3}
+      propertyPath: enemy.baseHP
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3225355490859934964, guid: 6d1b544e8cc856043bf7dec9b2dc054f,
+        type: 3}
+      propertyPath: enemy.currentHP
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d1b544e8cc856043bf7dec9b2dc054f, type: 3}
 --- !u!224 &5172656142669474946 stripped
@@ -1836,6 +1868,21 @@ PrefabInstance:
       propertyPath: progressBar
       value: 
       objectReference: {fileID: 1045681895}
+    - target: {fileID: 5442685422437550020, guid: 09bb58b9d8d09e44fb6c9bde32a7e900,
+        type: 3}
+      propertyPath: playerCharacter.charLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5442685422437550020, guid: 09bb58b9d8d09e44fb6c9bde32a7e900,
+        type: 3}
+      propertyPath: playerCharacter.baseHP
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5442685422437550020, guid: 09bb58b9d8d09e44fb6c9bde32a7e900,
+        type: 3}
+      propertyPath: playerCharacter.currentHP
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 4965923423264696044, guid: 09bb58b9d8d09e44fb6c9bde32a7e900,
         type: 3}
       propertyPath: m_SortingOrder

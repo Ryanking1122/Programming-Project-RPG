@@ -38,7 +38,7 @@ public class EnemyStateMachine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(currentState);
+        //Debug.Log(currentState);
         switch (currentState)
         {
             case (TurnState.PROCESSING):
@@ -65,7 +65,7 @@ public class EnemyStateMachine : MonoBehaviour
                 break;
         }
 
-        void UpgradeProgressBar()
+        void UpgradeProgressBar() //Sets the time for the enemy to perform an attack
         {
             curCooldown = curCooldown + Time.deltaTime;
             if (curCooldown >= maxCooldown)
@@ -76,12 +76,16 @@ public class EnemyStateMachine : MonoBehaviour
     }
     void ChooseAction()
     {
-        TurnHandler myAttack = new TurnHandler();
-        myAttack.attacker = enemy.name;
-        myAttack.type = "Enemy";
-        myAttack.attackerGameObject = this.gameObject;
-        myAttack.attackersTarget = bsm.playersInBattle[Random.Range(0, bsm.playersInBattle.Count)];
-        bsm.CollectActions(myAttack);
+        TurnHandler myAttack = new TurnHandler(); //Instantiation of TurnHandler Class to collect the Attacker Information
+        myAttack.attacker = enemy.name; //Sets the Attacker name
+        myAttack.type = "Enemy"; //Setst the Attacker Type
+        myAttack.attackerGameObject = this.gameObject; //Sets the Attacker Game Object
+        myAttack.attackersTarget = bsm.playersInBattle[Random.Range(0, bsm.playersInBattle.Count)]; //Sets the Target of the Attacker
+        int attackIndex = Random.Range(0, enemy.attackList.Count); //Randomly perform an attack from the available attacks the enemy has available
+        myAttack.chosenAttack = enemy.attackList[attackIndex]; //Set the random attack
+        Debug.Log(this.gameObject + " has chosen " + myAttack.chosenAttack.attackName + " and inflicts " + myAttack.chosenAttack.attackDamage + " damage");
+
+        bsm.CollectActions(myAttack); //Send the Attacker Information to the BattleStateMachine
     }
 
     private IEnumerator TimeForBattle()
@@ -90,19 +94,16 @@ public class EnemyStateMachine : MonoBehaviour
         {
             yield break;
         }
-        actionStarted = true;
-        //TODO: Animate Enemy toward Target
-        Vector2 targetPosition = new Vector2(targetToAttack.transform.position.x-1.5f, targetToAttack.transform.position.y);
+        actionStarted = true; //Set ActionStarted Boolean to true to signify an action starting
+        Vector2 targetPosition = new Vector2(targetToAttack.transform.position.x-1.5f, targetToAttack.transform.position.y); //Animate Enemy moving towards the player character
         while (MoveTowardEnemy(targetPosition))
         {
             yield return null;
         }
         //TODO: Wait A Bit
         yield return new WaitForSeconds(0.5f);
-        //TODO: Do Damage
-
-        //TODO: Animate back to startPosition
-        Vector2 firstPosition = startPosition;
+        PerformDamage(); //Performs Damage to the Player Character
+        Vector2 firstPosition = startPosition; //Animate Enemy back to original battle position
         while (MoveTowardStart(firstPosition))
         {
             yield return null;
@@ -125,5 +126,11 @@ public class EnemyStateMachine : MonoBehaviour
     private bool MoveTowardStart(Vector3 target)
     {
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
+    }
+
+    void PerformDamage()
+    {
+        float damageValue = enemy.currentStrength *(100/(100 + targetToAttack.GetComponent<PlayerCharacter>().currentDefense)); //playerCurStrength * (100/(100+enemyCurDef))
+        targetToAttack.GetComponent<PCStateMachine>().TakeDamage(damageValue);
     }
 }

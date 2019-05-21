@@ -20,8 +20,8 @@ public class PCStateMachine : MonoBehaviour
     }
 
     public TurnState currentState;
-    private float curCooldown = 0f;
-    private float maxCooldown = 5f;
+    private float curTime = 0f;
+    private float maxTime = 5f;
     public Image progressBar;
     public GameObject turnPointer;
     private Vector2 startPosition;
@@ -33,7 +33,7 @@ public class PCStateMachine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        curCooldown = UnityEngine.Random.Range(0, 2.5f);
+        curTime = UnityEngine.Random.Range(0, 2.5f);
         turnPointer.SetActive(false);
         bsm = GameObject.Find("BattleManager").GetComponent<BattleStateMachine>();
         currentState = TurnState.PROCESSING;
@@ -71,25 +71,24 @@ public class PCStateMachine : MonoBehaviour
 
         void UpgradeProgressBar()
         {
-            curCooldown = curCooldown + Time.deltaTime;
-            float calcCooldown = curCooldown / maxCooldown;
-            progressBar.transform.localScale = new Vector3(Mathf.Clamp(calcCooldown, 0, 1), progressBar.transform.localScale.y, progressBar.transform.localScale.z);
-            if(curCooldown >= maxCooldown)
+            curTime = curTime + Time.deltaTime;
+            float calcTime = curTime / maxTime;
+            progressBar.transform.localScale = new Vector2(Mathf.Clamp(calcTime, 0, 1), progressBar.transform.localScale.y); //Animates the Progress Bar charging up
+            if(curTime >= maxTime) //if Progress Bar is full add the player to the performer list
             {
                 currentState = TurnState.ADDTOLIST;
             }
         }
     }
 
-    private IEnumerator TimeForBattle()
+    private IEnumerator TimeForBattle() //Battle Logic
     {
         if (actionStarted)
         {
             yield break;
         }
-        actionStarted = true;
-        //TODO: Animate Enemy toward Target
-        Vector2 targetPosition = new Vector2(targetToAttack.transform.position.x + 1.5f, targetToAttack.transform.position.y);
+        actionStarted = true; //Sets actionStarted boolean to true to signify an action has begun
+        Vector2 targetPosition = new Vector2(targetToAttack.transform.position.x + 1.5f, targetToAttack.transform.position.y); //Animates player character towards the enemy
         while (MoveTowardEnemy(targetPosition))
         {
             yield return null;
@@ -104,23 +103,29 @@ public class PCStateMachine : MonoBehaviour
         {
             yield return null;
         }
-
-        //TODO: Remove from Performer List
-        bsm.performList.RemoveAt(0);
-        //TODO: Reset BSM -> Wait
-        bsm.battleState = BattleStateMachine.PerformAction.WAIT;
-        actionStarted = false;
-        curCooldown = 0f;
+        bsm.performList.RemoveAt(0); //Removes the current performer from the Performers List
+        bsm.battleState = BattleStateMachine.PerformAction.WAIT; //Reset the BattleStateMachine back to Wait
+        actionStarted = false; //resets the actionStarted boolean back to false because no action is being performed
+        curTime = 0f; //resets time gauge
         currentState = TurnState.PROCESSING;
 
     }
 
-    private bool MoveTowardEnemy(Vector3 target)
+    private bool MoveTowardEnemy(Vector3 target) //Moves the player character towards the enemy in the battle
     {
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
     }
-    private bool MoveTowardStart(Vector3 target)
+    private bool MoveTowardStart(Vector3 target) //Moves the player character back to it's original position in the battle
     {
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
+    }
+
+    public void TakeDamage(float damageValue)
+    {
+        playerCharacter.currentHP -= damageValue;
+        if(playerCharacter.currentHP <= 0)
+        {
+            currentState = TurnState.DEAD;
+        }
     }
 }
