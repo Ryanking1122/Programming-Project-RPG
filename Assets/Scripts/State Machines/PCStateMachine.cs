@@ -37,7 +37,7 @@ public class PCStateMachine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        charPanelSpacer = GameObject.Find("Battle Canvas").transform.FindChild("CharPanel").FindChild("CharPanelSpacer");
+        charPanelSpacer = GameObject.Find("Battle Canvas").transform.Find("CharPanel").Find("CharPanelSpacer");
         PopulateCharacterBar();
         curTime = UnityEngine.Random.Range(0, 2.5f); //Sets the Current Time to anywhere between 0 and half full for the Progress Bar
         turnPointer.SetActive(false); //Makes the Turn Pointer Invisible
