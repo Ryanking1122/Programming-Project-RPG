@@ -22,7 +22,7 @@ public class PCStateMachine : MonoBehaviour
     public TurnState currentState; //Current State of Character
     private float curTime = 0f; //Current Time for the Wait Bar
     private float maxTime = 5f; //Max Time for the Wait Bar
-    public Image progressBar; //Object of the Progress Bar
+    private Image progressBar; //Object of the Progress Bar
     public GameObject turnPointer; //Object of the Turn Pointer
     private Vector2 startPosition; //Player Character's Start Position for Animation
     //TimeForBattle stuff
@@ -30,10 +30,15 @@ public class PCStateMachine : MonoBehaviour
     public GameObject targetToAttack; //Object of the Target to Attack
     private float animSpeed = 10f; //Speed variable for animation of the player character
     private bool isAlive = true; //Boolean to see if character is alive
+    private CharPanelInfo charPanelInfo;
+    public GameObject charPanel;
+    private Transform charPanelSpacer;
 
     // Start is called before the first frame update
     void Start()
     {
+        charPanelSpacer = GameObject.Find("Battle Canvas").transform.FindChild("CharPanel").FindChild("CharPanelSpacer");
+        PopulateCharacterBar();
         curTime = UnityEngine.Random.Range(0, 2.5f); //Sets the Current Time to anywhere between 0 and half full for the Progress Bar
         turnPointer.SetActive(false); //Makes the Turn Pointer Invisible
         bsm = GameObject.Find("BattleManager").GetComponent<BattleStateMachine>();
@@ -155,7 +160,25 @@ public class PCStateMachine : MonoBehaviour
         playerCharacter.currentHP -= damageValue; //Subtract the Damage Value from the Player Character's HP
         if(playerCharacter.currentHP <= 0) //Checks if Player Character is Dead
         {
+            playerCharacter.currentHP = 0; //Sets the HP to 0 incase of negative numbers
             currentState = TurnState.DEAD; //If the Player Character is Dead then their Current State is set to Dead
         }
+        UpdateCharacterBar();
+    }
+
+    void PopulateCharacterBar()
+    {
+        charPanel = Instantiate(charPanel) as GameObject;
+        charPanelInfo = charPanel.GetComponent<CharPanelInfo>();
+        charPanelInfo.playerCharName.text = playerCharacter.name;
+        charPanelInfo.playerCharHP.text = "HP: " + playerCharacter.currentHP + "/" + playerCharacter.baseHP;
+        charPanelInfo.playerCharMP.text = "MP: " + playerCharacter.currentMP + "/" + playerCharacter.baseMP;
+        progressBar = charPanelInfo.progressBar;
+        charPanel.transform.SetParent(charPanelSpacer, false);
+    }
+
+    void UpdateCharacterBar()
+    {
+        charPanelInfo.playerCharHP.text = "HP: " + playerCharacter.currentHP + "/" + playerCharacter.baseHP;
     }
 }
