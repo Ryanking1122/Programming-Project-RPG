@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class PCStateMachine : MonoBehaviour
 {
-    public PlayerCharacter playerCharacter;
-    private BattleStateMachine bsm;
+    public PlayerCharacter playerCharacter; //Object of the Player Character
+    private BattleStateMachine bsm; //Object of the BattleStateMachine
 
-    public enum TurnState
+    public enum TurnState //States the Player can be in during a Battle
     {
         PROCESSING,
         ADDTOLIST,
@@ -19,25 +19,26 @@ public class PCStateMachine : MonoBehaviour
         DEAD
     }
 
-    public TurnState currentState;
-    private float curTime = 0f;
-    private float maxTime = 5f;
-    public Image progressBar;
-    public GameObject turnPointer;
-    private Vector2 startPosition;
+    public TurnState currentState; //Current State of Character
+    private float curTime = 0f; //Current Time for the Wait Bar
+    private float maxTime = 5f; //Max Time for the Wait Bar
+    public Image progressBar; //Object of the Progress Bar
+    public GameObject turnPointer; //Object of the Turn Pointer
+    private Vector2 startPosition; //Player Character's Start Position for Animation
     //TimeForBattle stuff
-    private bool actionStarted = false;
-    public GameObject targetToAttack;
-    private float animSpeed = 10f;
+    private bool actionStarted = false; //Boolean used to see if an Action has started
+    public GameObject targetToAttack; //Object of the Target to Attack
+    private float animSpeed = 10f; //Speed variable for animation of the player character
+    private bool isAlive = true; //Boolean to see if character is alive
 
     // Start is called before the first frame update
     void Start()
     {
-        curTime = UnityEngine.Random.Range(0, 2.5f);
-        turnPointer.SetActive(false);
+        curTime = UnityEngine.Random.Range(0, 2.5f); //Sets the Current Time to anywhere between 0 and half full for the Progress Bar
+        turnPointer.SetActive(false); //Makes the Turn Pointer Invisible
         bsm = GameObject.Find("BattleManager").GetComponent<BattleStateMachine>();
-        currentState = TurnState.PROCESSING;
-        startPosition = transform.position;
+        currentState = TurnState.PROCESSING; //Set Current State to Processing
+        startPosition = transform.position; //Set the variable for Start Position to the position of the Player Character when the battle begins
     }
 
     // Update is called once per frame
@@ -45,22 +46,51 @@ public class PCStateMachine : MonoBehaviour
     {
         switch (currentState)
         {
-            case (TurnState.PROCESSING):
+            case (TurnState.PROCESSING): //In this state the Progress Bar updates until it is full
                 UpgradeProgressBar();
                 break;
 
-            case (TurnState.ADDTOLIST):
+            case (TurnState.ADDTOLIST): //In this state the Player Character is added ro the list of Player Characters in the battle
                 bsm.heroManageList.Add(this.gameObject);
                 currentState = TurnState.WAITING;
                 break;
 
-            case (TurnState.DEAD):
+            case (TurnState.DEAD): //In this state the Player Character is Dead and can't be used anymore
+                if (!isAlive)
+                {
+                    return;
+                }
+                else
+                {
+                    //TODO: Change Tag
+                    this.gameObject.tag = "Dead Player";
+                    //TODO: Make Not Attackable by Enemy
+                    bsm.playersInBattle.Remove(this.gameObject);
+                    //TODO: Not Managable
+                    bsm.heroManageList.Remove(this.gameObject);
+                    //TODO: Deactivate Turn Pointer
+                    turnPointer.SetActive(false);
+                    //TODO: Reset GUI
+                    bsm.attackPanel.SetActive(false);
+                    bsm.enemySelectPanel.SetActive(false);
+                    //TODO: If Action was selected, Remove from Perform List
+                    for(int i = 0; i<bsm.performList.Count; i++)
+                    {
+                        if(bsm.performList[i].attackerGameObject == this.gameObject)
+                        {
+                            bsm.performList.Remove(bsm.performList[i]);
+                        }
+                    }
+                    //TODO: Reset PlayerInput
+                    bsm.playerInput = BattleStateMachine.PlayerGUI.ACTIVATE;
+                    isAlive = false;
+                }
                 break;
 
-            case (TurnState.WAITING):
+            case (TurnState.WAITING): //This state is used for waiting
                 break;
 
-            case (TurnState.ACTION):
+            case (TurnState.ACTION): //In this state the Player Character is performing an action
                 StartCoroutine(TimeForBattle());
                 currentState = TurnState.WAITING;
                 break;
@@ -69,14 +99,14 @@ public class PCStateMachine : MonoBehaviour
                 break;
         }
 
-        void UpgradeProgressBar()
+        void UpgradeProgressBar() //This function updates the Progress Bar until it is full then sets the state to ADDTOLIST
         {
-            curTime = curTime + Time.deltaTime;
-            float calcTime = curTime / maxTime;
+            curTime = curTime + Time.deltaTime; //Increments time bar value
+            float calcTime = curTime / maxTime; //Sets the coordinates for the wait bar animation
             progressBar.transform.localScale = new Vector2(Mathf.Clamp(calcTime, 0, 1), progressBar.transform.localScale.y); //Animates the Progress Bar charging up
             if(curTime >= maxTime) //if Progress Bar is full add the player to the performer list
             {
-                currentState = TurnState.ADDTOLIST;
+                currentState = TurnState.ADDTOLIST; //Adds the Player Character to the Manage List
             }
         }
     }
@@ -89,17 +119,17 @@ public class PCStateMachine : MonoBehaviour
         }
         actionStarted = true; //Sets actionStarted boolean to true to signify an action has begun
         Vector2 targetPosition = new Vector2(targetToAttack.transform.position.x + 1.5f, targetToAttack.transform.position.y); //Animates player character towards the enemy
-        while (MoveTowardEnemy(targetPosition))
+        while (MoveTowardEnemy(targetPosition)) //Animates the Player Character towards the Enemy
         {
             yield return null;
         }
         //TODO: Wait A Bit
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f); //Wait for the animation to complete
         //TODO: Do Damage
 
         //TODO: Animate back to startPosition
-        Vector2 firstPosition = startPosition;
-        while (MoveTowardStart(firstPosition))
+        Vector2 firstPosition = startPosition; //Sets this local variable for the original position of the character to the coordinates of the original position
+        while (MoveTowardStart(firstPosition)) //Resets the Player Character to it's original position
         {
             yield return null;
         }
@@ -107,7 +137,7 @@ public class PCStateMachine : MonoBehaviour
         bsm.battleState = BattleStateMachine.PerformAction.WAIT; //Reset the BattleStateMachine back to Wait
         actionStarted = false; //resets the actionStarted boolean back to false because no action is being performed
         curTime = 0f; //resets time gauge
-        currentState = TurnState.PROCESSING;
+        currentState = TurnState.PROCESSING; //Sets the Current State of the Player Character back to PROCESSING
 
     }
 
@@ -120,12 +150,12 @@ public class PCStateMachine : MonoBehaviour
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
     }
 
-    public void TakeDamage(float damageValue)
+    public void TakeDamage(float damageValue) //This function is used so the Player Character takes Damage
     {
-        playerCharacter.currentHP -= damageValue;
-        if(playerCharacter.currentHP <= 0)
+        playerCharacter.currentHP -= damageValue; //Subtract the Damage Value from the Player Character's HP
+        if(playerCharacter.currentHP <= 0) //Checks if Player Character is Dead
         {
-            currentState = TurnState.DEAD;
+            currentState = TurnState.DEAD; //If the Player Character is Dead then their Current State is set to Dead
         }
     }
 }

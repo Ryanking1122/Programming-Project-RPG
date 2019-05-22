@@ -62,16 +62,31 @@ public class BattleStateMachine : MonoBehaviour
                 GameObject performer = GameObject.Find(performList[0].attacker);
                 if(performList[0].type == "Enemy")
                 {
-                    EnemyStateMachine ESM = performer.GetComponent<EnemyStateMachine>();
-                    ESM.targetToAttack = performList[0].attackersTarget;
-                    ESM.currentState = EnemyStateMachine.TurnState.ACTION;
+                    EnemyStateMachine esm = performer.GetComponent<EnemyStateMachine>();
+                    for(int i = 0; i<playersInBattle.Count; i++)
+                    {
+                        if(performList[0].attackersTarget == playersInBattle[i])
+                        {
+                            esm.targetToAttack = performList[0].attackersTarget;
+                            esm.currentState = EnemyStateMachine.TurnState.ACTION;
+                            break;
+                        }
+                        else
+                        {
+                            performList[0].attackersTarget = playersInBattle[Random.Range(0, playersInBattle.Count)];
+                            esm.targetToAttack = performList[0].attackersTarget;
+                            esm.currentState = EnemyStateMachine.TurnState.ACTION;
+                        }
+                    }
+                    esm.targetToAttack = performList[0].attackersTarget;
+                    esm.currentState = EnemyStateMachine.TurnState.ACTION;
                 }
                 if(performList[0].type == "Player")
                 {
                     Debug.Log("Hero ready to perform");
-                    PCStateMachine PSM = performer.GetComponent<PCStateMachine>();
-                    PSM.targetToAttack = performList[0].attackersTarget;
-                    PSM.currentState = PCStateMachine.TurnState.ACTION;
+                    PCStateMachine psm = performer.GetComponent<PCStateMachine>();
+                    psm.targetToAttack = performList[0].attackersTarget;
+                    psm.currentState = PCStateMachine.TurnState.ACTION;
                 }
                 battleState = PerformAction.PERFORMACTION;
                 break;

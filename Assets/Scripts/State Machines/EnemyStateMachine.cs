@@ -96,26 +96,26 @@ public class EnemyStateMachine : MonoBehaviour
         }
         actionStarted = true; //Set ActionStarted Boolean to true to signify an action starting
         Vector2 targetPosition = new Vector2(targetToAttack.transform.position.x-1.5f, targetToAttack.transform.position.y); //Animate Enemy moving towards the player character
-        while (MoveTowardEnemy(targetPosition))
+        while (MoveTowardEnemy(targetPosition)) //Animates the Enemy toward the Player Character
         {
             yield return null;
         }
         //TODO: Wait A Bit
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f); //Wait for Animtaion to complete
         PerformDamage(); //Performs Damage to the Player Character
-        Vector2 firstPosition = startPosition; //Animate Enemy back to original battle position
-        while (MoveTowardStart(firstPosition))
+        Vector2 firstPosition = startPosition; //Sets local variable for the original position of the Enemy
+        while (MoveTowardStart(firstPosition)) //Animate Enemy back to original battle position
         {
             yield return null;
         }
 
         //TODO: Remove from Performer List
-        bsm.performList.RemoveAt(0);
+        bsm.performList.RemoveAt(0); //Removes the Enemy from the Performer List
         //TODO: Reset bsm -> Wait
-        bsm.battleState = BattleStateMachine.PerformAction.WAIT; 
-        actionStarted = false;
-        curCooldown = 0f;
-        currentState = TurnState.PROCESSING;
+        bsm.battleState = BattleStateMachine.PerformAction.WAIT; //Sets the next performer b to the Wait State
+        actionStarted = false; //Sets the actionStarted Boolean back to false
+        curCooldown = 0f; //Resets wait bar value to 0
+        currentState = TurnState.PROCESSING; //
 
     }
 
@@ -128,9 +128,10 @@ public class EnemyStateMachine : MonoBehaviour
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
     }
 
-    void PerformDamage()
+    void PerformDamage() //Performs Damage to the Player Character
     {
-        float damageValue = enemy.currentStrength *(100/(100 + targetToAttack.GetComponent<PlayerCharacter>().currentDefense)); //playerCurStrength * (100/(100+enemyCurDef))
-        targetToAttack.GetComponent<PCStateMachine>().TakeDamage(damageValue);
+        float damageValue = enemy.currentStrength *(100/(100 + targetToAttack.GetComponent<PCStateMachine>().playerCharacter.currentDefense)); //Formula for calculating basic damage
+        Debug.Log(damageValue);
+        targetToAttack.GetComponent<PCStateMachine>().TakeDamage(damageValue); //Applies the Damage
     }
 }
