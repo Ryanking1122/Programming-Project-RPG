@@ -8,6 +8,7 @@ public class OriginForm : Form
     {
         formName = "Origin Form";
         formDescription = "The Ultimate Form attained by the user of the sword. The Spirit becomes one with the user and gains amazing strength";
-        formManaCost = 0; 
+        formManaCost = 0;
+        formStrength = 5;
     }
 }

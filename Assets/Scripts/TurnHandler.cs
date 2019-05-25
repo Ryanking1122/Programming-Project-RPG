@@ -11,4 +11,5 @@ public class TurnHandler
     public GameObject attackersTarget; //GameObject for the Target of the Attacker.
 
     public Attack chosenAttack; //The Attack being used
+    public Form chosenForm; //The Form Chosen
 }

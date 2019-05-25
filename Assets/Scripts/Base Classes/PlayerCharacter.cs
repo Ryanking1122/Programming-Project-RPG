@@ -6,5 +6,6 @@ using UnityEngine;
 public class PlayerCharacter : Character
 {
     public int abilityPoints; //Points used to buy Abilities in the Ability Shop 
+    public List<Attack> skillList = new List<Attack>(); //List of Skills
     public List<Form> formList = new List<Form>(); //List of Forms that can be used by the Player Character
 }

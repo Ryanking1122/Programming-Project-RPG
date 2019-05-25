@@ -76,18 +76,26 @@ public class PCStateMachine : MonoBehaviour
                     //TODO: Deactivate Turn Pointer
                     turnPointer.SetActive(false);
                     //TODO: Reset GUI
-                    bsm.attackPanel.SetActive(false);
+                    bsm.actionPanel.SetActive(false);
                     bsm.enemySelectPanel.SetActive(false);
                     //TODO: If Action was selected, Remove from Perform List
-                    for(int i = 0; i<bsm.performList.Count; i++)
+                    if(bsm.playersInBattle.Count > 0)
                     {
-                        if(bsm.performList[i].attackerGameObject == this.gameObject)
+                        for (int i = 0; i < bsm.performList.Count; i++)
                         {
-                            bsm.performList.Remove(bsm.performList[i]);
+                            if (bsm.performList[i].attackerGameObject == this.gameObject)
+                            {
+                                bsm.performList.Remove(bsm.performList[i]);
+                            }
+                            if (bsm.performList[i].attackersTarget == this.gameObject)
+                            {
+                                bsm.performList[i].attackersTarget = bsm.playersInBattle[UnityEngine.Random.Range(0, bsm.playersInBattle.Count)];
+                            }
                         }
                     }
                     //TODO: Reset PlayerInput
-                    bsm.playerInput = BattleStateMachine.PlayerGUI.ACTIVATE;
+                    bsm.battleState = BattleStateMachine.PerformAction.CHECKIFALIVE;
+
                     isAlive = false;
                 }
                 break;
@@ -131,7 +139,7 @@ public class PCStateMachine : MonoBehaviour
         //TODO: Wait A Bit
         yield return new WaitForSeconds(0.5f); //Wait for the animation to complete
         //TODO: Do Damage
-
+        PerformDamage();
         //TODO: Animate back to startPosition
         Vector2 firstPosition = startPosition; //Sets this local variable for the original position of the character to the coordinates of the original position
         while (MoveTowardStart(firstPosition)) //Resets the Player Character to it's original position
@@ -139,10 +147,18 @@ public class PCStateMachine : MonoBehaviour
             yield return null;
         }
         bsm.performList.RemoveAt(0); //Removes the current performer from the Performers List
-        bsm.battleState = BattleStateMachine.PerformAction.WAIT; //Reset the BattleStateMachine back to Wait
+        if(bsm.battleState != BattleStateMachine.PerformAction.WIN && bsm.battleState != BattleStateMachine.PerformAction.LOSE)
+        {
+            bsm.battleState = BattleStateMachine.PerformAction.WAIT;
+            curTime = 0f; //resets time gauge
+            currentState = TurnState.PROCESSING; //Sets the Current State of the Player Character back to PROCESSING
+        }
+        else
+        {
+            currentState = TurnState.WAITING;
+        }
         actionStarted = false; //resets the actionStarted boolean back to false because no action is being performed
-        curTime = 0f; //resets time gauge
-        currentState = TurnState.PROCESSING; //Sets the Current State of the Player Character back to PROCESSING
+        
 
     }
 
@@ -153,6 +169,14 @@ public class PCStateMachine : MonoBehaviour
     private bool MoveTowardStart(Vector3 target) //Moves the player character back to it's original position in the battle
     {
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
+    }
+
+    public void PerformDamage()
+    {
+        float damageValue = playerCharacter.currentStrength * (100/(100 + targetToAttack.GetComponent<EnemyStateMachine>().enemy.currentDefense));
+        Debug.Log("Player Damage: " + damageValue);
+        targetToAttack.GetComponent<EnemyStateMachine>().TakeDamage(damageValue);
+        Debug.Log(targetToAttack.GetComponent<EnemyStateMachine>().enemy.currentHP);
     }
 
     public void TakeDamage(float damageValue) //This function is used so the Player Character takes Damage
