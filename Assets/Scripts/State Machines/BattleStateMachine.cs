@@ -321,13 +321,16 @@ public class BattleStateMachine : MonoBehaviour
         {
             foreach (Attack skill in heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.skillList)
             {
-                GameObject addSkillButton = Instantiate(skillButton) as GameObject;
-                Text skillButtonText = addSkillButton.transform.Find("Text").gameObject.GetComponent<Text>();
-                skillButtonText.text = skill.attackName;
-                SkillAttack sB = skillButton.GetComponent<SkillAttack>();
-                sB.skillToPerform = skill;
-                addSkillButton.transform.SetParent(skillsSpacer, false);
-                attackButtons.Add(addSkillButton);
+                if (skill.learned)
+                {
+                    GameObject addSkillButton = Instantiate(skillButton) as GameObject;
+                    Text skillButtonText = addSkillButton.transform.Find("Text").gameObject.GetComponent<Text>();
+                    skillButtonText.text = skill.attackName;
+                    SkillAttack sB = skillButton.GetComponent<SkillAttack>();
+                    sB.skillToPerform = skill;
+                    addSkillButton.transform.SetParent(skillsSpacer, false);
+                    attackButtons.Add(addSkillButton);
+                }
             }
         }
         else
@@ -353,11 +356,11 @@ public class BattleStateMachine : MonoBehaviour
             formsButton.GetComponent<Button>().interactable = false;
         }
 
-        if (heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.itemList.Count > 0)
+        if(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.itemList.Count > 0)
         {
-            foreach (Item item in heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.itemList)
+            foreach(Item item in heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.itemList)
             {
-                if (item.itemCount > 0)
+                if(item.itemCount > 0)
                 {
                     GameObject addItemButton = Instantiate(itemButton) as GameObject;
                     Text itemButtonText = addItemButton.transform.Find("Text").gameObject.GetComponent<Text>();
@@ -368,11 +371,13 @@ public class BattleStateMachine : MonoBehaviour
                     attackButtons.Add(addItemButton);
                 }
             }
+            
         }
         else
         {
             itemsButton.GetComponent<Button>().interactable = false;
         }
+
     }
 
     public void selectSkill()
