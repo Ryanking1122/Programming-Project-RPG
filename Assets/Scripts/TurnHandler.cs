@@ -12,4 +12,6 @@ public class TurnHandler
 
     public Attack chosenAttack; //The Attack being used
     public Form chosenForm; //The Form Chosen
+    public Item chosenItem; //The Item Chosen
+    public string typeOfAttack; //The Type of Attack or Turn
 }

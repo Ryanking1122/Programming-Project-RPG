@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class BattleStateMachine : MonoBehaviour
 {
@@ -12,7 +13,8 @@ public class BattleStateMachine : MonoBehaviour
         PERFORMACTION,
         CHECKIFALIVE,
         WIN,
-        LOSE
+        LOSE,
+        FLED
     }
     public PerformAction battleState;
 
@@ -24,8 +26,6 @@ public class BattleStateMachine : MonoBehaviour
     {
         ACTIVATE,
         WAITING,
-        INPUT1,
-        INPUT2,
         DONE
     }
     public PlayerGUI playerInput;
@@ -45,6 +45,12 @@ public class BattleStateMachine : MonoBehaviour
     public GameObject actionButton;
     public GameObject skillButton;
     public GameObject formButton;
+    public GameObject fledText;
+    public GameObject itemButton;
+    public GameObject itemsPanel;
+    public Transform itemsSpacer;
+    public GameObject winText;
+    public GameObject loseText;
     private List<GameObject> attackButtons = new List<GameObject>();
     private List<GameObject> enemyButtons = new List<GameObject>();
 
@@ -59,6 +65,10 @@ public class BattleStateMachine : MonoBehaviour
         skillsPanel.SetActive(false);
         formsPanel.SetActive(false);
         enemySelectPanel.SetActive(false);
+        itemsPanel.SetActive(false);
+        fledText.SetActive(false);
+        winText.SetActive(false);
+        loseText.SetActive(false);
         EnemyButtons();
     }
 
@@ -131,10 +141,40 @@ public class BattleStateMachine : MonoBehaviour
                 {
                     playersInBattle[i].GetComponent<PCStateMachine>().currentState = PCStateMachine.TurnState.WAITING;
                 }
+                winText.SetActive(true);
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    SceneManager.LoadScene("Town");
+                }
                 break;
 
             case (PerformAction.LOSE): //When the battle concludes and the player loses
                 Debug.Log("You Lost");
+                for (int i = 0; i < enemiesInBattle.Count; i++)
+                {
+                    enemiesInBattle[i].GetComponent<EnemyStateMachine>().currentState = EnemyStateMachine.TurnState.WAITING;
+                }
+                loseText.SetActive(true);
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    SceneManager.LoadScene("Town");
+                }
+                break;
+
+            case (PerformAction.FLED):
+                for (int i = 0; i < playersInBattle.Count; i++)
+                {
+                    playersInBattle[i].GetComponent<PCStateMachine>().currentState = PCStateMachine.TurnState.WAITING;
+                }
+                for (int i = 0; i < enemiesInBattle.Count; i++)
+                {
+                    enemiesInBattle[i].GetComponent<EnemyStateMachine>().currentState = EnemyStateMachine.TurnState.WAITING;
+                }
+                fledText.SetActive(true);
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    SceneManager.LoadScene("Town");
+                }
                 break;
         }
 
@@ -146,7 +186,7 @@ public class BattleStateMachine : MonoBehaviour
                     heroManageList[0].transform.Find("TurnPointer").gameObject.SetActive(true);
                     heroChoice = new TurnHandler();
                     actionPanel.SetActive(true);
-                    CreateAttackButtons();
+                    CreateActionButtons();
                     playerInput = PlayerGUI.WAITING;
                 }
                 break;
@@ -233,7 +273,7 @@ public class BattleStateMachine : MonoBehaviour
 
     }
 
-    void CreateAttackButtons()
+    void CreateActionButtons()
     {
         GameObject attackButton = Instantiate(actionButton) as GameObject;
         Text attackButtonText = attackButton.transform.Find("Text").gameObject.GetComponent<Text>();
@@ -259,18 +299,25 @@ public class BattleStateMachine : MonoBehaviour
         GameObject itemsButton = Instantiate(actionButton) as GameObject;
         Text itemsButtonText = itemsButton.transform.Find("Text").gameObject.GetComponent<Text>();
         itemsButtonText.text = "Items";
-        //itemsButton.GetComponent<Button>().onClick.AddListener(() => Input1());
+        itemsButton.GetComponent<Button>().onClick.AddListener(() => SelectItem());
         itemsButton.transform.SetParent(actionSpacer, false);
         attackButtons.Add(itemsButton);
 
         GameObject fleeButton = Instantiate(actionButton) as GameObject;
         Text fleeButtonText = fleeButton.transform.Find("Text").gameObject.GetComponent<Text>();
         fleeButtonText.text = "Flee";
-        //fleeButton.GetComponent<Button>().onClick.AddListener(() => Input1());
+        fleeButton.GetComponent<Button>().onClick.AddListener(() => Flee());
         fleeButton.transform.SetParent(actionSpacer, false);
         attackButtons.Add(fleeButton);
 
-        if(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.skillList.Count > 0)
+        GameObject loseButton = Instantiate(actionButton) as GameObject;
+        Text loseButtonText = loseButton.transform.Find("Text").gameObject.GetComponent<Text>();
+        loseButtonText.text = "Lose";
+        loseButton.GetComponent<Button>().onClick.AddListener(() => Lose());
+        loseButton.transform.SetParent(actionSpacer, false);
+        attackButtons.Add(loseButton);
+
+        if (heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.skillList.Count > 0)
         {
             foreach (Attack skill in heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.skillList)
             {
@@ -304,6 +351,27 @@ public class BattleStateMachine : MonoBehaviour
         else
         {
             formsButton.GetComponent<Button>().interactable = false;
+        }
+
+        if (heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.itemList.Count > 0)
+        {
+            foreach (Item item in heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.itemList)
+            {
+                if (item.itemCount > 0)
+                {
+                    GameObject addItemButton = Instantiate(itemButton) as GameObject;
+                    Text itemButtonText = addItemButton.transform.Find("Text").gameObject.GetComponent<Text>();
+                    itemButtonText.text = item.itemName;
+                    ItemAttack iB = itemButton.GetComponent<ItemAttack>();
+                    iB.itemToUse = item;
+                    addItemButton.transform.SetParent(itemsSpacer, false);
+                    attackButtons.Add(addItemButton);
+                }
+            }
+        }
+        else
+        {
+            itemsButton.GetComponent<Button>().interactable = false;
         }
     }
 
@@ -351,28 +419,50 @@ public class BattleStateMachine : MonoBehaviour
         if (chosenForm.formName == "Origin Form")
         {
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentStrength = strength * 3;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentStrength);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentDefense = defense * 3;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentDefense);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentSpeed = speed * 3;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentSpeed);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentMagic = magic * 3;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentMagic);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentEvasion = evasion * 3;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentEvasion);
         }
         else if(chosenForm.formName == "Released Form")
         {
-            heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentStrength = strength * 2;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentStrength);
+            heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentStrength = strength * 2;    
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentDefense = defense * 2;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentDefense);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentSpeed = speed * 2;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentSpeed);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentMagic = magic * 2;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentMagic);
             heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentEvasion = evasion * 2;
-            Debug.Log(heroManageList[0].GetComponent<PCStateMachine>().playerCharacter.currentEvasion);
         }
+    }
+
+    public void SelectItem()
+    {
+        actionPanel.SetActive(false);
+        itemsPanel.SetActive(true);
+    }
+
+    public void Item(Item chosenItem)
+    {
+        heroChoice.attacker = heroManageList[0].name;
+        heroChoice.attackerGameObject = heroManageList[0];
+        heroChoice.type = "Player";
+        heroChoice.chosenItem = chosenItem;
+        heroChoice.typeOfAttack = "Item";
+        itemsPanel.SetActive(false);
+        enemySelectPanel.SetActive(true);
+    }
+
+    public TurnHandler GetHeroChoice()
+    {
+        return heroChoice;
+    }
+
+    public void Flee()
+    {
+        battleState = PerformAction.FLED;
+    }
+
+    public void Lose()
+    {
+        battleState = PerformAction.LOSE;
     }
 }

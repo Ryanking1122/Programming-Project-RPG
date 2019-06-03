@@ -14,7 +14,6 @@ public class PCStateMachine : MonoBehaviour
         PROCESSING,
         ADDTOLIST,
         WAITING,
-        SELECTING,
         ACTION,
         DEAD
     }
@@ -52,10 +51,10 @@ public class PCStateMachine : MonoBehaviour
         switch (currentState)
         {
             case (TurnState.PROCESSING): //In this state the Progress Bar updates until it is full
-                UpgradeProgressBar();
+                UpdateProgressBar();
                 break;
 
-            case (TurnState.ADDTOLIST): //In this state the Player Character is added ro the list of Player Characters in the battle
+            case (TurnState.ADDTOLIST): //In this state the Player Character is added ro the list of Player Characters able to be managed in the battle
                 bsm.heroManageList.Add(this.gameObject);
                 currentState = TurnState.WAITING;
                 break;
@@ -67,18 +66,18 @@ public class PCStateMachine : MonoBehaviour
                 }
                 else
                 {
-                    //TODO: Change Tag
+                    //Change Tag
                     this.gameObject.tag = "Dead Player";
-                    //TODO: Make Not Attackable by Enemy
+                    //Make Not Attackable by Enemy
                     bsm.playersInBattle.Remove(this.gameObject);
-                    //TODO: Not Managable
+                    //Not Managable
                     bsm.heroManageList.Remove(this.gameObject);
-                    //TODO: Deactivate Turn Pointer
+                    //Deactivate Turn Pointer
                     turnPointer.SetActive(false);
-                    //TODO: Reset GUI
+                    //Reset GUI
                     bsm.actionPanel.SetActive(false);
                     bsm.enemySelectPanel.SetActive(false);
-                    //TODO: If Action was selected, Remove from Perform List
+                    //If Action was selected, Remove from Perform List
                     if(bsm.playersInBattle.Count > 0)
                     {
                         for (int i = 0; i < bsm.performList.Count; i++)
@@ -93,7 +92,7 @@ public class PCStateMachine : MonoBehaviour
                             }
                         }
                     }
-                    //TODO: Reset PlayerInput
+                    //Reset PlayerInput
                     bsm.battleState = BattleStateMachine.PerformAction.CHECKIFALIVE;
 
                     isAlive = false;
@@ -112,7 +111,7 @@ public class PCStateMachine : MonoBehaviour
                 break;
         }
 
-        void UpgradeProgressBar() //This function updates the Progress Bar until it is full then sets the state to ADDTOLIST
+        void UpdateProgressBar() //This function updates the Progress Bar until it is full then sets the state to ADDTOLIST
         {
             curTime = curTime + Time.deltaTime; //Increments time bar value
             float calcTime = curTime / maxTime; //Sets the coordinates for the wait bar animation
@@ -136,11 +135,12 @@ public class PCStateMachine : MonoBehaviour
         {
             yield return null;
         }
-        //TODO: Wait A Bit
+        //Wait A Bit
         yield return new WaitForSeconds(0.5f); //Wait for the animation to complete
-        //TODO: Do Damage
-        PerformDamage();
-        //TODO: Animate back to startPosition
+        //Do Damage
+        string typeOfAttack = bsm.GetHeroChoice().typeOfAttack;
+        PerformDamage(typeOfAttack);
+        //Animate back to startPosition
         Vector2 firstPosition = startPosition; //Sets this local variable for the original position of the character to the coordinates of the original position
         while (MoveTowardStart(firstPosition)) //Resets the Player Character to it's original position
         {
@@ -158,8 +158,6 @@ public class PCStateMachine : MonoBehaviour
             currentState = TurnState.WAITING;
         }
         actionStarted = false; //resets the actionStarted boolean back to false because no action is being performed
-        
-
     }
 
     private bool MoveTowardEnemy(Vector3 target) //Moves the player character towards the enemy in the battle
@@ -171,9 +169,17 @@ public class PCStateMachine : MonoBehaviour
         return target != (transform.position = Vector3.MoveTowards(transform.position, target, animSpeed * Time.deltaTime));
     }
 
-    public void PerformDamage()
+    public void PerformDamage(string typeOfAttack)
     {
-        float damageValue = playerCharacter.currentStrength * (100/(100 + targetToAttack.GetComponent<EnemyStateMachine>().enemy.currentDefense));
+        float damageValue;
+        if(typeOfAttack == "Item")
+        {
+            damageValue = 50;
+        }
+        else
+        {
+            damageValue = playerCharacter.currentStrength * (100 / (100 + targetToAttack.GetComponent<EnemyStateMachine>().enemy.currentDefense));
+        }
         Debug.Log("Player Damage: " + damageValue);
         targetToAttack.GetComponent<EnemyStateMachine>().TakeDamage(damageValue);
         Debug.Log(targetToAttack.GetComponent<EnemyStateMachine>().enemy.currentHP);
@@ -201,8 +207,9 @@ public class PCStateMachine : MonoBehaviour
         charPanel.transform.SetParent(charPanelSpacer, false);
     }
 
-    void UpdateCharacterBar()
+    public void UpdateCharacterBar()
     {
         charPanelInfo.playerCharHP.text = "HP: " + playerCharacter.currentHP + "/" + playerCharacter.baseHP;
+        charPanelInfo.playerCharMP.text = "MP: " + playerCharacter.currentMP + "/" + playerCharacter.baseMP;
     }
 }

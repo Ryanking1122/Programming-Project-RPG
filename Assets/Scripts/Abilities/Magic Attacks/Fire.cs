@@ -10,5 +10,6 @@ public class Fire : Attack
         attackDescription = "A Fire based Magic Ability";
         attackDamage = 10f;
         attackManaCost = 10;
+        learned = false;
     }
 }

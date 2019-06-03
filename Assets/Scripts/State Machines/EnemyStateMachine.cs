@@ -43,7 +43,7 @@ public class EnemyStateMachine : MonoBehaviour
         switch (currentState)
         {
             case (TurnState.PROCESSING): //State for when the wait bar is filling
-                UpgradeProgressBar(); //Updates the Wait Time
+                UpdateProgressBar(); //Updates the Wait Time
                 break;
 
             case (TurnState.CHOOSEACTION): //State for Choosing an action for the enemy to perform
@@ -98,7 +98,7 @@ public class EnemyStateMachine : MonoBehaviour
                 break;
         }
 
-        void UpgradeProgressBar() //Sets the time for the enemy to perform an attack
+        void UpdateProgressBar() //Sets the time for the enemy to perform an attack
         {
             curWait = curWait + Time.deltaTime; //Increments the current wait over time
             if (curWait >= maxWait)
@@ -107,6 +107,7 @@ public class EnemyStateMachine : MonoBehaviour
             }
         }
     }
+
     void ChooseAction() //Chooses the attack for the Enemy and sends it to the Turn Handler
     {
         TurnHandler myAttack = new TurnHandler(); //Instantiation of TurnHandler Class to collect the Attacker Information
@@ -133,7 +134,7 @@ public class EnemyStateMachine : MonoBehaviour
         {
             yield return null;
         }
-        //TODO: Wait A Bit
+        //Wait A Bit
         yield return new WaitForSeconds(0.5f); //Wait for Animation to complete
         PerformDamage(); //Performs Damage to the Player Character
         Vector2 firstPosition = startPosition; //Sets local variable for the original position of the Enemy
@@ -149,7 +150,6 @@ public class EnemyStateMachine : MonoBehaviour
         actionStarted = false; //Sets the actionStarted Boolean back to false
         curWait = 0f; //Resets wait bar value to 0
         currentState = TurnState.PROCESSING; //sets the Enemy state to Processing for the wait bar to fill
-
     }
 
     private bool MoveTowardEnemy(Vector3 target) //Animates the Enemy toward the Player Character

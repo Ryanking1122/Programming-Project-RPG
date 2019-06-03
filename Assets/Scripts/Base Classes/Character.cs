@@ -25,15 +25,5 @@ public class Character
     public float baseEvasion; //Character's Base Evasion Stat
     public float currentEvasion; //Character's Current Evasion Stat
 
-    public enum Type //Character Element Type
-    {
-        FIRE,
-        WATER,
-        LIGHT,
-        DARK,
-        GRASS,
-        STEEL
-    }
-
     public List<Attack> attackList = new List<Attack>(); //List of Attacks that can be used by the character
 }

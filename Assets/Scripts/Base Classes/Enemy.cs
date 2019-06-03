@@ -5,5 +5,5 @@ using UnityEngine;
 
 public class Enemy : Character
 {
-    public Type enemyType; //Enemy's Elemental Type
+
 }

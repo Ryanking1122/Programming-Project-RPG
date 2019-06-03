@@ -15,14 +15,19 @@ public class ToggleText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(dialoguePanel.activeSelf == true)
+        SetTextActive();
+    }
+
+    public void SetTextActive()
+    {
+        if (dialoguePanel.activeSelf == true)
         {
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 dialoguePanel.SetActive(false);
             }
         }
-        else if(dialoguePanel.activeSelf == false)
+        else if (dialoguePanel.activeSelf == false)
         {
             if (Input.GetKeyDown(KeyCode.Return))
             {

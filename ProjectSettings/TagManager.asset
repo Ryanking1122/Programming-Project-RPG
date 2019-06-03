@@ -7,6 +7,11 @@ TagManager:
   - Enemy
   - Dead Player
   - Dead Enemy
+  - Scene Switch
+  - Town Scene Switch
+  - Shop Scene Switch
+  - Battle Scene Switch
+  - ToggleText
   layers:
   - Default
   - TransparentFX
